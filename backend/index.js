@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
+const OpenAI = require("openai");
 // const saltRounds = 10;
 const app = express();
 require("dotenv").config();
@@ -11,8 +12,22 @@ var jwt = require("jsonwebtoken");
 const port = process.env.PORT || 3000;
 
 // middleware
-app.use(express.json());
+
 app.use(cors());
+// app.use(express.json());
+app.use((req, res, next) => {
+  const methodsWithBody = ["POST", "PUT", "PATCH"];
+  if (methodsWithBody.includes(req.method)) {
+    express.json()(req, res, next);
+  } else {
+    next();
+  }
+});
+
+// connect OpenAI
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 // conect mongodb
 
@@ -95,6 +110,28 @@ async function run() {
         return res.status(401).send({ message: "Not Access" });
       }
     };
+
+    // OpenAI
+    app.post("/openai", async (req, res) => {
+      const { prompt } = req.body;
+
+      try {
+        const completion = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.7,
+          max_tokens: 512,
+        });
+
+        res.json({ reply: completion.choices[0].message.content });
+      } catch (error) {
+        console.error(
+          "OpenAI error:",
+          error.response?.data || error.message || error
+        );
+        res.status(500).json({ error: "Lỗi kết nối OpenAI" });
+      }
+    });
 
     // ROUTER setting SEO
     // Lấy SEO info theo slug
@@ -422,14 +459,14 @@ async function run() {
     });
 
     // cart Router
-    app.post("/add-to-cart", verifyJWT, async (req, res) => {
+    app.post("/add-to-cart", async (req, res) => {
       const newCartItems = req.body;
       const result = await cartCollections.insertOne(newCartItems);
       res.send(result);
     });
 
     // get cart items by id
-    app.get("/cart-item/:id", verifyJWT, async (req, res) => {
+    app.get("/cart-item/:id", async (req, res) => {
       const id = req.params.id;
       const email = req.query.email;
       const query = {
@@ -496,13 +533,13 @@ async function run() {
     });
 
     // delete cart item
+
     app.delete("/delete-cart-item/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { classId: id };
       const result = await cartCollections.deleteOne(query);
       res.send(result);
     });
-
     // payment router
     // app.post("/create-payment-intent", async (req, res) => {
     //   const { price } = req.body;

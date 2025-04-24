@@ -7,12 +7,14 @@ import {
 } from "react-icons/fa";
 import { Outlet } from "react-router-dom";
 import NavBar from "../components/headers/NavBar";
+import ChatWidget from "../pages/ChatWidget";
 
 const mainLayout = () => {
   return (
     <main className="dark:bg-black overflow-hidden">
       <NavBar />
       <Outlet />
+      <ChatWidget />
       <footer className="bg-white text-black p-6">
         <hr className="border-gray-700 mb-6" />
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">

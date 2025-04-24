@@ -1,4 +1,5 @@
 import React from "react";
+import ChatWidget from "../ChatWidget";
 import HeroContainer from "../Home/Hero/HeroContainer";
 import PopularClasses from "../Home/PopularClasses/PopularClasses";
 import PopularTeacher from "../Home/PopularTeacher/Popularteacher";
@@ -13,6 +14,7 @@ const Home = () => {
         <PopularClasses />
         <PopularTeacher />
       </div>
+      <ChatWidget />
     </section>
   );
 };

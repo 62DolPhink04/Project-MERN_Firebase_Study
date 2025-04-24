@@ -149,7 +149,7 @@ const Login = () => {
         Explore our comprehensive library of courses, meticulously crafted
       </p>
 
-      <div className="mx-auto max-w-lg mb-0 mt-6 rounded-lg p-4 shadow-lg sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-xl mb-0 mt-6 rounded-lg p-4 shadow-lg sm:p-6 lg:p-8">
         <form className="space-y-4" onSubmit={handleSubmit}>
           <p className="text-center text-red-400 text-lg font-medium">
             Sign in to your account

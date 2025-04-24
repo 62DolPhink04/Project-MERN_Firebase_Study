@@ -32,7 +32,7 @@ const SelectedClass = () => {
         console.error(error);
         setLoading(false);
       });
-  }, []);
+  }, [currentUser]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -50,7 +50,7 @@ const SelectedClass = () => {
   const price = totalPrice + totalTax;
 
   // sự kiện nút xóa Item cart
-  const hanleDelete = (id) => {
+  const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -62,21 +62,14 @@ const SelectedClass = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axiosSecure
-          .delete(`/delete-cart-item/${id}`)
+          .delete(`http://localhost:3000/delete-cart-item/${id}`)
           .then((res) => {
-            // console.log("API Response:", res);
-            if (res.data.deleteCount > 0) {
-              Swal.fire({
-                title: "Deleted!",
-                text: "Your file has been deleted.",
-                icon: "success",
-              });
-              navigate("/dashboard/my-selected");
+            if (res.data.deletedCount > 0) {
+              Swal.fire("Deleted!", "Your file has been deleted.", "success");
+              setClasses((prev) => prev.filter((item) => item._id !== id));
             }
           })
-          .catch((error) => {
-            console.log(error);
-          });
+          .catch((error) => console.log(error));
       }
     });
   };
@@ -153,7 +146,7 @@ const SelectedClass = () => {
                             </td>
                             <td className="py-4 flex pt-8 gap-2">
                               <button
-                                onClick={() => hanleDelete(item._id)}
+                                onClick={() => handleDelete(item._id)}
                                 className="flex items-center px-0.5 p-2 cursor-pointer bg-red-500 rounded-3xl text-white font-bold"
                               >
                                 <MdDeleteSweep className="text-lg" />{" "}
